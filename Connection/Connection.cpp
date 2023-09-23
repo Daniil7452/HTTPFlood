@@ -1,5 +1,4 @@
 #include "Connection.hpp"
-#include <functional>
 
 Connection::Connection(const std::string& url) : _url(url), _resolver(_io_context), _socket(_io_context) {
     boost::asio::ip::tcp::resolver::results_type endpoints = _resolver.resolve(_url, "http");
