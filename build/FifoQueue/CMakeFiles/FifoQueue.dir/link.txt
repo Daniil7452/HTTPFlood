@@ -1,0 +1,2 @@
+/usr/bin/ar qc libFifoQueue.a CMakeFiles/FifoQueue.dir/FifoQueue.cpp.o
+/usr/bin/ranlib libFifoQueue.a

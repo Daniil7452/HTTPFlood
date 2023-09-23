@@ -15,16 +15,13 @@ public:
 
     void enqueue(const T& item)
     {
-        std::cout << "enqueue" << std::endl;
         pthread_mutex_lock(&_mtx);
         _vector.push_back(item);
         pthread_mutex_unlock(&_mtx);
-        std::cout << "END enqueue" << std::endl;
     }
 
     T dequeue()
     {
-        std::cout << "END dequeue" << std::endl;
         pthread_mutex_lock(&_mtx);
         if (isEmpty())
         {
@@ -35,7 +32,6 @@ public:
         T item = _vector.front();
         _vector.erase(_vector.begin());
         pthread_mutex_unlock(&_mtx);
-        std::cout << "END dequeue" << std::endl;
         return item;
     }
 

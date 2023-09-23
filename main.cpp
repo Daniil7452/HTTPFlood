@@ -1,34 +1,11 @@
 #include <iostream>
-#include <pthread.h>
 #include "Connection.hpp"
-#include "FifoQueue.hpp"
 #include <cstdlib>
 #include <termios.h>
 #include <sys/poll.h>
 
 
 using namespace std;
-
-FifoQueue<const char*> queue;
-
-
-void* spamHTTP(void* attr) 
-{
-    while(1)
-    {
-        try
-        {
-            Connection connection("google.com");
-            const char* res = connection.GetResponce();
-            queue.enqueue(res);
-        }
-        catch (const char* e) 
-        {
-            std::cout << e;
-        }
-    }
-    return NULL;
-}
 
 bool isEscPressed() {
     struct termios old_tio, new_tio; // Структуры для сохранения и восстановления настроек терминала
@@ -64,21 +41,18 @@ bool isEscPressed() {
 
 int main()
 {
-    pthread_t thread;
-    if(pthread_create(&thread, NULL, spamHTTP, (void*)&queue) != 0)
-    {
-        std::cout << "pthread create error" << std::endl;
-        return -1;
-    }   
+    Connection connection("google.com");
 
     while (!isEscPressed())
     {
-        if (!queue.isEmpty())
-            std::cout << queue.dequeue() << std::endl;
+        if (!connection.queue.isEmpty())
+        {
+            std::cout << connection.queue.dequeue() << std::endl;
+        }
 	   else
             usleep(100);
     }
 
-    pthread_cancel(thread);
+    
     return 0;
 }

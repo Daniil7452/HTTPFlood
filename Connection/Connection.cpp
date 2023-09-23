@@ -1,8 +1,16 @@
 #include "Connection.hpp"
+#include <functional>
 
 Connection::Connection(const std::string& url) : _url(url), _resolver(_io_context), _socket(_io_context) {
     boost::asio::ip::tcp::resolver::results_type endpoints = _resolver.resolve(_url, "http");
     boost::asio::connect(_socket, endpoints);
+
+    pthread_create(&_thread, NULL, _startFlood, this);
+}
+
+Connection::~Connection()
+{
+    pthread_cancel(_thread);
 }
 
 const char* Connection::GetResponce()
@@ -31,5 +39,14 @@ const char* Connection::GetResponce()
     catch (std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
         return nullptr;
+    }
+}
+
+void* Connection::_startFlood(void* attr) 
+{
+    Connection* connection = reinterpret_cast<Connection*>(attr);
+    while(1)
+    { 
+        connection->queue.enqueue(connection->GetResponce());
     }
 }
